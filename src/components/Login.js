@@ -25,6 +25,8 @@ const Login = ({ setToken }) => {
       } else if (error.message) {
         errorMsg = error.message;
       }
+      // Log for debugging
+      console.log('Login error:', errorMsg, error);
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
