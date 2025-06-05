@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -37,32 +37,47 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
+    <div className="container d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+      <div className="card p-4 shadow" style={{ maxWidth: '400px', width: '100%' }}>
+        <h2 className="mb-4 text-center">Register</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary w-100 mb-2">Register</button>
+        </form>
+        <div className="text-center">
+          <span>Already have an account? </span>
+          <Link to="/login">Login</Link>
+        </div>
+      </div>
     </div>
   );
 };
