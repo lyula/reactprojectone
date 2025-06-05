@@ -19,7 +19,12 @@ const Login = ({ setToken }) => {
       setToken(response.data.token);
       navigate('/dashboard');
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 'Error logging in';
+      let errorMsg = 'Error logging in';
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
