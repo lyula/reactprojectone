@@ -1,25 +1,31 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-    `${process.env.REACT_APP_API_URL}/api/users/login`,
+        `${process.env.REACT_APP_API_URL}/api/users/login`,
         { email, password },
         { headers: { 'x-api-key': 'clip-pilot2000' } }
       );
       setToken(response.data.token);
       navigate('/dashboard');
     } catch (error) {
-      setMessage(error.response?.data.message || 'Error logging in');
+      const errorMsg = error.response?.data?.message || 'Error logging in';
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: errorMsg,
+        confirmButtonText: 'OK'
+      });
     }
   };
 
@@ -43,7 +49,6 @@ const Login = ({ setToken }) => {
         />
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };
