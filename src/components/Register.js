@@ -8,6 +8,8 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   // Password strength: min 8 chars, at least 1 letter and 1 number
@@ -18,6 +20,28 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+gi    // 1. Check if email exists first
+    try {
+      const emailCheck = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/users/check-email`,
+        { email },
+        { headers: { 'x-api-key': 'clip-pilot2000' } }
+      );
+      if (emailCheck.data.exists) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Email Already Registered',
+          text: 'The email you entered is already in use. Please use a different email.',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+    } catch (err) {
+      // If the endpoint doesn't exist or fails, fallback to old logic
+      // (You can remove this catch if your backend always supports check-email)
+    }
+
+    // 2. Validate password strength
     if (!isStrongPassword(password)) {
       Swal.fire({
         icon: 'warning',
@@ -28,6 +52,7 @@ const Register = () => {
       return;
     }
 
+    // 3. Validate password match
     if (password !== confirmPassword) {
       Swal.fire({
         icon: 'warning',
@@ -38,6 +63,7 @@ const Register = () => {
       return;
     }
 
+    // 4. Register user
     try {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/api/users/register`,
@@ -101,25 +127,59 @@ const Register = () => {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="form-control"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer',
+                color: '#888'
+              }}
+            >
+              {showPassword ? (
+                <i className="bi bi-eye-slash"></i>
+              ) : (
+                <i className="bi bi-eye"></i>
+              )}
+            </span>
           </div>
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               className="form-control"
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            <span
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                cursor: 'pointer',
+                color: '#888'
+              }}
+            >
+              {showConfirmPassword ? (
+                <i className="bi bi-eye-slash"></i>
+              ) : (
+                <i className="bi bi-eye"></i>
+              )}
+            </span>
           </div>
           <button type="submit" className="btn btn-primary w-100 mb-2">Register</button>
         </form>
