@@ -7,10 +7,37 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+
+  // Password strength: min 8 chars, at least 1 letter and 1 number
+  const isStrongPassword = (pwd) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pwd);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isStrongPassword(password)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Weak Password',
+        text: 'Password must be at least 8 characters long and contain at least one letter and one number.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Password Mismatch',
+        text: 'Passwords do not match.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     try {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/api/users/register`,
@@ -19,20 +46,33 @@ const Register = () => {
       );
       Swal.fire({
         icon: 'success',
-        title: 'Registration successful!',
-        text: 'Please log in.',
+        title: `Welcome, ${name}!`,
+        text: 'Your account has been created successfully.',
         confirmButtonText: 'OK'
       }).then(() => {
         navigate('/login');
       });
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Error registering';
-      Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
-        text: errorMsg,
-        confirmButtonText: 'OK'
-      });
+      if (
+        error.response &&
+        (error.response.status === 409 ||
+          errorMsg.toLowerCase().includes('email') && errorMsg.toLowerCase().includes('exist'))
+      ) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Email Already Registered',
+          text: 'The email you entered is already in use. Please use a different email.',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Registration Failed',
+          text: errorMsg,
+          confirmButtonText: 'OK'
+        });
+      }
     }
   };
 
@@ -68,6 +108,16 @@ const Register = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
