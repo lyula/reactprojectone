@@ -12,15 +12,15 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Password strength: min 8 chars, at least 1 letter and 1 number
+  // Password strength: min 8 chars, at least 1 letter and 1 number, allow any character
   const isStrongPassword = (pwd) => {
-    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pwd);
+    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(pwd);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-gi    // 1. Check if email exists first
+    // 1. Check if email exists first
     try {
       const emailCheck = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/users/check-email`,
@@ -31,7 +31,7 @@ gi    // 1. Check if email exists first
         Swal.fire({
           icon: 'warning',
           title: 'Email Already Registered',
-          text: 'The email you entered is already in use. Please use a different email.',
+          text: 'A user already exists with this email.',
           confirmButtonText: 'OK'
         });
         return;
