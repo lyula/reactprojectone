@@ -8,12 +8,15 @@ const Dashboard = ({ token }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('https://reactdemoproject.onrender.com/api/users/me', {
-          headers: {
-            'x-api-key': 'clip-pilot2000',
-            Authorization: `Bearer ${token}`
+        const response = await axios.get(
+         `${process.env.REACT_APP_API_URL}/api/users/me`,
+          {
+            headers: {
+              'x-api-key': 'clip-pilot2000',
+              'Authorization': `Bearer ${token}`
+            }
           }
-        });
+        );
         setUser(response.data);
       } catch (error) {
         setError('Failed to load user data');

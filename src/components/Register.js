@@ -7,13 +7,13 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://reactdemoproject.onrender.com/api/users/register', 
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/users/register`,
         { name, email, password },
         { headers: { 'x-api-key': 'clip-pilot2000' } }
       );
@@ -26,7 +26,13 @@ const Register = () => {
         navigate('/login');
       });
     } catch (error) {
-      setMessage(error.response?.data.message || 'Error registering');
+      const errorMsg = error.response?.data?.message || 'Error registering';
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: errorMsg,
+        confirmButtonText: 'OK'
+      });
     }
   };
 
@@ -57,7 +63,6 @@ const Register = () => {
         />
         <button type="submit">Register</button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };
